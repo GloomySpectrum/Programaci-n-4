@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Proyecto {
+public class ProyectoFinal {
 
     public static final byte TIPO_DOCUMENTO_IDENTIFICACION = 0;
     public static final byte DOCUMENTO_IDENTIFICACION = 1;
