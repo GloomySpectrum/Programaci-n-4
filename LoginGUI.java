@@ -10,13 +10,16 @@ public class LoginGUI extends JFrame implements ActionListener {
     private JTextField correoTextField;
     private JPasswordField contrasenaPasswordField;
 
-    private List<String[]> usuarios = new ArrayList<>();
+    private List<Usuario> usuariosRegistrados;
 
     public LoginGUI() {
         setTitle("Login - MyHotel");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        // Inicializamos la lista de usuarios registrados
+        usuariosRegistrados = new ArrayList<>();
 
         JPanel panel = new JPanel(new GridLayout(3, 2));
         JLabel correoLabel = new JLabel("Correo electrónico:");
@@ -30,7 +33,7 @@ public class LoginGUI extends JFrame implements ActionListener {
         registrarButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new RegistroGUI();
+                new RegistroGUI(usuariosRegistrados);
             }
         });
 
@@ -43,10 +46,6 @@ public class LoginGUI extends JFrame implements ActionListener {
 
         add(panel);
         setVisible(true);
-
-        // Simulación de datos de usuario
-        usuarios.add(new String[]{"correo1@example.com", "contrasena1"});
-        usuarios.add(new String[]{"correo2@example.com", "contrasena2"});
     }
 
     @Override
@@ -55,8 +54,8 @@ public class LoginGUI extends JFrame implements ActionListener {
         String contrasena = new String(contrasenaPasswordField.getPassword());
 
         boolean loginCorrecto = false;
-        for (String[] usuario : usuarios) {
-            if (usuario[0].equals(correo) && usuario[1].equals(contrasena)) {
+        for (Usuario usuario : usuariosRegistrados) {
+            if (usuario.getCorreo().equals(correo) && usuario.getContrasena().equals(contrasena)) {
                 loginCorrecto = true;
                 break;
             }
@@ -80,11 +79,15 @@ class RegistroGUI extends JFrame implements ActionListener {
             correoElectronicoTextField, direccionResidenciaTextField, ciudadResidenciaTextField, telefonoContactoTextField;
     private JPasswordField contrasenaPasswordField, confirmarContrasenaPasswordField;
 
-    public RegistroGUI() {
+    private List<Usuario> usuariosRegistrados;
+
+    public RegistroGUI(List<Usuario> usuariosRegistrados) {
         setTitle("Registro de Usuario");
         setSize(400, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+
+        this.usuariosRegistrados = usuariosRegistrados;
 
         JPanel panel = new JPanel(new GridLayout(0, 2));
         JLabel tipoIdentificacionLabel = new JLabel("Tipo de identificación:");
@@ -139,6 +142,7 @@ class RegistroGUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // Validar los datos ingresados y registrar al usuario en la lista de usuariosRegistrados
         String tipoIdentificacion = tipoIdentificacionTextField.getText();
         String documentoIdentificacion = documentoIdentificacionTextField.getText();
         String nombres = nombresTextField.getText();
@@ -154,10 +158,49 @@ class RegistroGUI extends JFrame implements ActionListener {
                 || correoElectronico.isEmpty() || direccionResidencia.isEmpty() || ciudadResidencia.isEmpty()
                 || telefonoContacto.isEmpty() || contrasena.isEmpty() || confirmarContrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.");
+        } else if (!contrasena.equals(confirmarContrasena)) {
+            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden. Intente de nuevo.");
         } else {
-            // Realizar el registro del usuario aquí
+            // Crear un nuevo usuario y agregarlo a la lista de usuarios registrados
+            Usuario nuevoUsuario = new Usuario(tipoIdentificacion, documentoIdentificacion, nombres, apellidos,
+                    correoElectronico, direccionResidencia, ciudadResidencia, telefonoContacto, contrasena);
+            usuariosRegistrados.add(nuevoUsuario);
             JOptionPane.showMessageDialog(this, "Usuario registrado satisfactoriamente");
             dispose(); // Cerrar la ventana de registro
         }
+    }
+}
+
+class Usuario {
+    private String tipoIdentificacion;
+    private String documentoIdentificacion;
+    private String nombres;
+    private String apellidos;
+    private String correo;
+    private String direccionResidencia;
+    private String ciudadResidencia;
+    private String telefonoContacto;
+    private String contrasena;
+
+    public Usuario(String tipoIdentificacion, String documentoIdentificacion, String nombres, String apellidos,
+                   String correo, String direccionResidencia, String ciudadResidencia, String telefonoContacto,
+                   String contrasena) {
+        this.tipoIdentificacion = tipoIdentificacion;
+        this.documentoIdentificacion = documentoIdentificacion;
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.correo = correo;
+        this.direccionResidencia = direccionResidencia;
+        this.ciudadResidencia = ciudadResidencia;
+        this.telefonoContacto = telefonoContacto;
+        this.contrasena = contrasena;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public String getContrasena() {
+        return contrasena;
     }
 }
